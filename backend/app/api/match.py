@@ -10,7 +10,11 @@ from app.models.match import (
 )
 
 from app.services.ml_service import calculate_semantic_similarity
-from app.services.matching_service import compare_skills
+from app.services.matching_service import (
+    compare_skills,
+    calculate_education_score,
+    calculate_experience_score
+)
 
 
 router = APIRouter(
@@ -71,11 +75,25 @@ def create_match_api(
 
     skill_score = skill_result["skill_match_score"]
 
+    education_score = calculate_education_score(
+    resume["cleaned_text"],
+    job["description"]
+    )
+
+    experience_score = calculate_experience_score(
+    resume["cleaned_text"],
+    job["description"]
+    )
+
     # Weighted final score
     final_score = (
-        semantic_score * 0.7
-        +
-        skill_score * 0.3
+    semantic_score * 0.50
+    +
+    skill_score * 0.25
+    +
+    education_score * 0.10
+    +
+    experience_score * 0.15
     )
 
     final_score = round(final_score, 2)
@@ -87,6 +105,8 @@ def create_match_api(
         "job_id": job_id,
         "semantic_score": semantic_score,
         "skill_score": skill_score,
+        "education_score": education_score,
+        "experience_score": experience_score,
         "final_score": final_score,
         "matched_skills": skill_result["matched_skills"],
         "missing_skills": skill_result["missing_skills"]
@@ -101,6 +121,8 @@ def create_match_api(
         "job_title": job["title"],
         "semantic_score": semantic_score,
         "skill_score": skill_score,
+        "education_score": education_score,
+        "experience_score": experience_score,
         "final_score": final_score,
         "matched_skills": skill_result["matched_skills"],
         "missing_skills": skill_result["missing_skills"]
@@ -123,6 +145,8 @@ def get_my_matches(
             "job_id": match["job_id"],
             "semantic_score": match["semantic_score"],
             "skill_score": match["skill_score"],
+            "education_score": match.get("education_score", 0),
+            "experience_score": match.get("experience_score", 0),
             "final_score": match["final_score"],
             "matched_skills": match["matched_skills"],
             "missing_skills": match["missing_skills"],

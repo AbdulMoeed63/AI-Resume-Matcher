@@ -1,11 +1,13 @@
 from app.services.skill_extractor import extract_skills
+from app.services.profile_extractor import (
+    extract_profile_information,
+    extract_required_experience,
+    extract_required_education,
+    EDUCATION_RANK
+)
 
 
 def compare_skills(resume_text: str, job_description: str) -> dict:
-    """
-    Compare skills found in the resume with skills required
-    in the job description.
-    """
 
     resume_skills = set(
         skill.lower()
@@ -39,3 +41,76 @@ def compare_skills(resume_text: str, job_description: str) -> dict:
         "missing_skills": missing_skills,
         "skill_match_score": round(skill_score, 2)
     }
+
+
+def calculate_education_score(
+    resume_text: str,
+    job_description: str
+) -> float:
+
+    resume_education = extract_profile_information(
+        resume_text
+    )["education"]["education_level"]
+
+    required_education = extract_required_education(
+        job_description
+    )["education_level"]
+
+    # If job doesn't specify education,
+    # don't penalize the candidate.
+    if required_education is None:
+        return 100.0
+
+    if resume_education is None:
+        return 0.0
+
+    resume_rank = EDUCATION_RANK.get(
+        resume_education,
+        0
+    )
+
+    required_rank = EDUCATION_RANK.get(
+        required_education,
+        0
+    )
+
+    if resume_rank >= required_rank:
+        return 100.0
+
+    # Partial credit for being one level below
+    if resume_rank == required_rank - 1:
+        return 70.0
+
+    return 40.0
+
+
+def calculate_experience_score(
+    resume_text: str,
+    job_description: str
+) -> float:
+
+    resume_years = extract_profile_information(
+        resume_text
+    )["experience_years"]
+
+    required_years = extract_required_experience(
+        job_description
+    )
+
+    # If job doesn't specify experience,
+    # don't penalize the candidate.
+    if required_years == 0:
+        return 100.0
+
+    if resume_years >= required_years:
+        return 100.0
+
+    # Partial score based on how close the candidate is
+    score = (
+        resume_years / required_years
+    ) * 100
+
+    return round(
+        max(0.0, min(100.0, score)),
+        2
+    )
