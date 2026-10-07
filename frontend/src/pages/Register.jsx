@@ -26,7 +26,6 @@ function Register() {
       });
 
       navigate("/login");
-
     } catch (error) {
       setError(
         error.response?.data?.detail ||
@@ -38,63 +37,125 @@ function Register() {
   };
 
   return (
-    <div className="auth-container">
-      <div className="auth-card">
+    <div className="register-page">
 
-        <h1>Create Account</h1>
+      <div className="register-glow register-glow-one"></div>
+      <div className="register-glow register-glow-two"></div>
 
-        <p className="auth-subtitle">
-          Start analyzing your resume with AI.
-        </p>
+      <div className="register-card">
 
-        <form onSubmit={handleRegister}>
+        <div className="register-header">
 
-          <label>Full Name</label>
+          <div className="register-logo">
+            AI
+          </div>
 
-          <input
-            type="text"
-            placeholder="Enter your name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-          />
+          <span className="register-badge">
+            AI RESUME MATCHER
+          </span>
 
-          <label>Email</label>
+          <h1>
+            Create Your Account
+          </h1>
 
-          <input
-            type="email"
-            placeholder="Enter your email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
+          <p>
+            Start analyzing your resume with intelligent
+            AI-powered job matching.
+          </p>
 
-          <label>Password</label>
+        </div>
 
-          <input
-            type="password"
-            placeholder="Create a password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
+        <form
+          className="register-form"
+          onSubmit={handleRegister}
+        >
+
+          <div className="register-field">
+
+            <label htmlFor="register-name">
+              Full Name
+            </label>
+
+            <input
+              id="register-name"
+              type="text"
+              placeholder="Enter your full name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
+
+          </div>
+
+          <div className="register-field">
+
+            <label htmlFor="register-email">
+              Email Address
+            </label>
+
+            <input
+              id="register-email"
+              type="email"
+              placeholder="Enter your email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+
+          </div>
+
+          <div className="register-field">
+
+            <label htmlFor="register-password">
+              Password
+            </label>
+
+            <input
+              id="register-password"
+              type="password"
+              placeholder="Create a password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+
+            <span className="register-password-hint">
+              Use a strong password to keep your account secure.
+            </span>
+
+          </div>
 
           {error && (
-            <p className="error-message">
+            <div className="register-error">
               {error}
-            </p>
+            </div>
           )}
 
           <button
+            className="register-submit"
             type="submit"
             disabled={loading}
           >
-            {loading ? "Creating Account..." : "Create Account"}
+            {loading ? (
+              <>
+                <span className="register-spinner"></span>
+                Creating Account...
+              </>
+            ) : (
+              <>
+                Create Account
+                <span className="register-arrow">→</span>
+              </>
+            )}
           </button>
 
         </form>
 
-        <p className="auth-footer">
+        <div className="register-divider">
+          <span>Already registered?</span>
+        </div>
+
+        <p className="register-footer">
           Already have an account?{" "}
           <Link to="/login">
             Sign In
@@ -102,6 +163,7 @@ function Register() {
         </p>
 
       </div>
+
     </div>
   );
 }

@@ -7115,3 +7115,486 @@ body {
   box-shadow: none;
   animation: none;
 }
+/* =================================================
+   REGISTER PAGE
+   AI RESUME MATCHER - PROFESSIONAL THEME
+   ================================================= */
+
+.register-page {
+  min-height: 100vh;
+  width: 100%;
+  position: relative;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  padding: 40px 20px;
+
+  overflow: hidden;
+
+  background:
+    radial-gradient(
+      circle at 15% 20%,
+      rgba(25, 105, 78, 0.18),
+      transparent 32%
+    ),
+    radial-gradient(
+      circle at 85% 80%,
+      rgba(20, 90, 68, 0.14),
+      transparent 30%
+    ),
+    #071713;
+}
+
+
+/* ---------------------------------------------
+   BACKGROUND GLOW
+   --------------------------------------------- */
+
+.register-glow {
+  position: absolute;
+
+  width: 320px;
+  height: 320px;
+
+  border-radius: 50%;
+
+  background: rgba(31, 130, 95, 0.10);
+
+  filter: blur(90px);
+
+  pointer-events: none;
+}
+
+.register-glow-one {
+  top: -120px;
+  left: -100px;
+
+  animation: registerGlowFloat 7s ease-in-out infinite;
+}
+
+.register-glow-two {
+  right: -100px;
+  bottom: -120px;
+
+  animation: registerGlowFloat 9s ease-in-out infinite reverse;
+}
+
+@keyframes registerGlowFloat {
+
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+
+  50% {
+    transform: translate(25px, -20px);
+  }
+}
+
+
+/* ---------------------------------------------
+   REGISTER CARD
+   --------------------------------------------- */
+
+.register-card {
+  position: relative;
+  z-index: 2;
+
+  width: 100%;
+  max-width: 460px;
+
+  padding: 42px 42px 34px;
+
+  border-radius: 24px;
+
+  background: rgba(247, 243, 232, 0.97);
+
+  border: 1px solid rgba(255, 255, 255, 0.55);
+
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.38),
+    0 0 45px rgba(31, 130, 95, 0.10);
+
+  animation: registerCardEnter 0.7s ease forwards;
+}
+
+@keyframes registerCardEnter {
+
+  from {
+    opacity: 0;
+    transform: translateY(22px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+
+/* ---------------------------------------------
+   HEADER
+   --------------------------------------------- */
+
+.register-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.register-logo {
+  width: 52px;
+  height: 52px;
+
+  margin: 0 auto 14px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 15px;
+
+  background: #0d4f3d;
+
+  color: #f7f3e8;
+
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 1px;
+
+  box-shadow:
+    0 8px 25px rgba(13, 79, 61, 0.28),
+    0 0 22px rgba(25, 120, 88, 0.18);
+}
+
+.register-badge {
+  display: inline-block;
+
+  margin-bottom: 9px;
+
+  font-size: 10px;
+  font-weight: 800;
+
+  letter-spacing: 2px;
+
+  color: #176c52;
+}
+
+.register-header h1 {
+  margin: 0 0 10px;
+
+  color: #17342b;
+
+  font-size: 30px;
+  font-weight: 750;
+
+  letter-spacing: -0.5px;
+}
+
+.register-header p {
+  max-width: 350px;
+
+  margin: 0 auto;
+
+  color: #6d776f;
+
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+
+/* ---------------------------------------------
+   FORM
+   --------------------------------------------- */
+
+.register-form {
+  display: flex;
+  flex-direction: column;
+
+  gap: 18px;
+}
+
+.register-field {
+  display: flex;
+  flex-direction: column;
+
+  gap: 7px;
+}
+
+.register-field label {
+  color: #29473c;
+
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.register-field input {
+  width: 100%;
+
+  box-sizing: border-box;
+
+  padding: 13px 15px;
+
+  border-radius: 11px;
+
+  border: 1px solid #d7ddd7;
+
+  outline: none;
+
+  background: #fffdf8;
+
+  color: #263a32;
+
+  font-size: 14px;
+
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease,
+    transform 0.25s ease;
+}
+
+.register-field input::placeholder {
+  color: #a4aaa5;
+}
+
+.register-field input:focus {
+  border-color: #278465;
+
+  box-shadow:
+    0 0 0 3px rgba(39, 132, 101, 0.11),
+    0 5px 18px rgba(22, 91, 70, 0.06);
+
+  transform: translateY(-1px);
+}
+
+.register-password-hint {
+  color: #8a928c;
+
+  font-size: 11px;
+
+  line-height: 1.4;
+}
+
+
+/* ---------------------------------------------
+   ERROR
+   --------------------------------------------- */
+
+.register-error {
+  padding: 11px 13px;
+
+  border-radius: 10px;
+
+  background: #fff0ef;
+
+  border: 1px solid #f2c9c5;
+
+  color: #b3433b;
+
+  font-size: 13px;
+
+  animation: registerErrorIn 0.3s ease;
+}
+
+@keyframes registerErrorIn {
+
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+/* ---------------------------------------------
+   REGISTER BUTTON
+   --------------------------------------------- */
+
+.register-submit {
+  width: 100%;
+
+  min-height: 48px;
+
+  margin-top: 3px;
+
+  border: none;
+
+  border-radius: 12px;
+
+  background: #0d5b45;
+
+  color: #ffffff;
+
+  font-size: 14px;
+  font-weight: 750;
+
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+
+  box-shadow:
+    0 9px 22px rgba(13, 91, 69, 0.20);
+
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    background 0.25s ease;
+}
+
+.register-submit:hover:not(:disabled) {
+  background: #0b684e;
+
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 13px 30px rgba(13, 91, 69, 0.28),
+    0 0 20px rgba(28, 130, 96, 0.13);
+}
+
+.register-submit:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.register-submit:disabled {
+  opacity: 0.7;
+
+  cursor: not-allowed;
+}
+
+.register-arrow {
+  font-size: 18px;
+
+  transition: transform 0.25s ease;
+}
+
+.register-submit:hover .register-arrow {
+  transform: translateX(4px);
+}
+
+
+/* ---------------------------------------------
+   LOADING SPINNER
+   --------------------------------------------- */
+
+.register-spinner {
+  width: 15px;
+  height: 15px;
+
+  border: 2px solid rgba(255, 255, 255, 0.35);
+
+  border-top-color: #ffffff;
+
+  border-radius: 50%;
+
+  animation: registerSpin 0.7s linear infinite;
+}
+
+@keyframes registerSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+/* ---------------------------------------------
+   FOOTER
+   --------------------------------------------- */
+
+.register-divider {
+  position: relative;
+
+  margin: 27px 0 18px;
+
+  text-align: center;
+}
+
+.register-divider::before {
+  content: "";
+
+  position: absolute;
+
+  left: 0;
+  right: 0;
+
+  top: 50%;
+
+  height: 1px;
+
+  background: #e1e3df;
+}
+
+.register-divider span {
+  position: relative;
+
+  padding: 0 12px;
+
+  background: #f7f3e8;
+
+  color: #9a9f9a;
+
+  font-size: 11px;
+}
+
+.register-footer {
+  margin: 0;
+
+  text-align: center;
+
+  color: #747c76;
+
+  font-size: 13px;
+}
+
+.register-footer a {
+  color: #126c50;
+
+  font-weight: 750;
+
+  text-decoration: none;
+
+  transition: color 0.2s ease;
+}
+
+.register-footer a:hover {
+  color: #0a8a63;
+  text-decoration: underline;
+}
+
+
+/* ---------------------------------------------
+   RESPONSIVE
+   --------------------------------------------- */
+
+@media (max-width: 520px) {
+
+  .register-page {
+    padding: 25px 15px;
+  }
+
+  .register-card {
+    padding: 32px 24px 27px;
+
+    border-radius: 20px;
+  }
+
+  .register-header h1 {
+    font-size: 26px;
+  }
+
+  .register-header p {
+    font-size: 13px;
+  }
+
+  .register-logo {
+    width: 48px;
+    height: 48px;
+  }
+}
