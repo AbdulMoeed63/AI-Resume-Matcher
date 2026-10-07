@@ -12,6 +12,9 @@ import ResumeUpload from "./pages/ResumeUpload";
 import JobDescription from "./pages/JobDescription";
 import Match from "./pages/Match";
 import MatchHistory from "./pages/MacthHistory";
+import ForgotPassword from "./pages/ForgetPassword";
+import VerifyResetCode from "./pages/VerifyResetCode";
+import ResetPassword from "./pages/ResetPassword";
 
 function App() {
   return (
@@ -59,6 +62,19 @@ function App() {
           element={<MatchHistory />}
         />
 
+        <Route
+          path="/forgot-password"
+          element={<ForgotPassword />}
+        />
+        <Route
+          path ="/verify-reset-code"
+          element ={<VerifyResetCode/>}
+        />
+
+        <Route
+          path="/reset-password"
+          element={<ResetPassword />}
+        />
 
       </Routes>
 

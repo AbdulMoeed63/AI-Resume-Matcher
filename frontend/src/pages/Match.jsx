@@ -1,28 +1,116 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import {
+  useEffect,
+  useState,
+  useRef
+} from "react";
+
+import {
+  useNavigate
+} from "react-router-dom";
+
 import API from "../services/api";
 
+
 function Match() {
+
   const navigate = useNavigate();
 
+  const matchStarted = useRef(false);
+
   const [loading, setLoading] = useState(true);
+
   const [result, setResult] = useState(null);
+
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    const runMatch = async () => {
-      const resumeId = localStorage.getItem("resume_id");
-      const jobId = localStorage.getItem("job_id");
+  const [animatedScore, setAnimatedScore] = useState(0);
 
-      if (!resumeId || !jobId) {
-        setError(
-          "Resume or job information is missing. Please complete the previous steps."
-        );
-        setLoading(false);
+
+  /*
+   * Animate the main match percentage
+   */
+  useEffect(() => {
+
+    if (!result) {
+      return;
+    }
+
+    const target = Number(
+      result.final_score || 0
+    );
+
+    let current = 0;
+
+    const duration = 1400;
+
+    const intervalTime = 20;
+
+    const increment =
+      target /
+      (duration / intervalTime);
+
+    const interval = setInterval(() => {
+
+      current += increment;
+
+      if (current >= target) {
+
+        current = target;
+
+        clearInterval(interval);
+      }
+
+      setAnimatedScore(
+        Number(current.toFixed(1))
+      );
+
+    }, intervalTime);
+
+
+    return () => {
+      clearInterval(interval);
+    };
+
+  }, [result]);
+
+
+  /*
+   * Run matching request
+   */
+  useEffect(() => {
+
+    const runMatch = async () => {
+
+      // Prevent React StrictMode from
+      // creating the same match twice
+      if (matchStarted.current) {
         return;
       }
 
+      matchStarted.current = true;
+
+
+      const resumeId =
+        localStorage.getItem("resume_id");
+
+      const jobId =
+        localStorage.getItem("job_id");
+
+
+      if (!resumeId || !jobId) {
+
+        setError(
+          "Resume or job information is missing. Please complete the previous steps."
+        );
+
+        setLoading(false);
+
+        return;
+      }
+
+
       try {
+
         const response = await API.post(
           `/match/?resume_id=${resumeId}&job_id=${jobId}`
         );
@@ -30,6 +118,7 @@ function Match() {
         setResult(response.data);
 
       } catch (error) {
+
         console.error(
           "Matching error:",
           error
@@ -41,23 +130,44 @@ function Match() {
         );
 
       } finally {
+
         setLoading(false);
+
       }
+
     };
 
+
     runMatch();
+
   }, []);
 
+
   const handleNewAnalysis = () => {
-    localStorage.removeItem("resume_id");
-    localStorage.removeItem("job_id");
+
+    localStorage.removeItem(
+      "resume_id"
+    );
+
+    localStorage.removeItem(
+      "job_id"
+    );
 
     navigate("/resume");
+
   };
 
+
+  /*
+   * Loading screen
+   */
   if (loading) {
+
     return (
+
       <div className="match-page">
+
+        <div className="match-loading-orbit"></div>
 
         <div className="match-loading-container">
 
@@ -82,7 +192,9 @@ function Match() {
           </p>
 
           <div className="match-loading-bar">
+
             <div className="match-loading-progress"></div>
+
           </div>
 
           <span className="match-loading-status">
@@ -92,11 +204,19 @@ function Match() {
         </div>
 
       </div>
+
     );
+
   }
 
+
+  /*
+   * Error screen
+   */
   if (error) {
+
     return (
+
       <div className="match-page">
 
         <div className="match-error-container">
@@ -119,7 +239,9 @@ function Match() {
 
           <button
             className="match-primary-button"
-            onClick={() => navigate("/resume")}
+            onClick={() =>
+              navigate("/resume")
+            }
           >
             ← Start Again
           </button>
@@ -127,19 +249,62 @@ function Match() {
         </div>
 
       </div>
+
     );
+
   }
 
+
+  /*
+   * Calculate ring percentage
+   */
+  const score = Number(
+    result?.final_score || 0
+  );
+
+
+  const matchTitle =
+    score >= 80
+      ? "Strong Match"
+      : score >= 60
+      ? "Good Match"
+      : score >= 40
+      ? "Partial Match"
+      : "Low Match";
+
+
+  /*
+   * Education and experience may be null
+   * when the job description does not specify
+   * those requirements.
+   */
+  const educationSpecified =
+    result.education_score !== null &&
+    result.education_score !== undefined;
+
+  const experienceSpecified =
+    result.experience_score !== null &&
+    result.experience_score !== undefined;
+
+
   return (
+
     <div className="match-page">
 
-      {/* NAVBAR */}
+
+      {/* =================================================
+          NAVBAR
+      ================================================= */}
+
       <header className="match-navbar">
 
         <div
           className="match-logo"
-          onClick={() => navigate("/dashboard")}
+          onClick={() =>
+            navigate("/dashboard")
+          }
         >
+
           <div className="match-logo-mark">
             AI
           </div>
@@ -147,11 +312,15 @@ function Match() {
           <span>
             Resume Matcher
           </span>
+
         </div>
+
 
         <button
           className="match-dashboard-button"
-          onClick={() => navigate("/dashboard")}
+          onClick={() =>
+            navigate("/dashboard")
+          }
         >
           Dashboard
         </button>
@@ -159,10 +328,17 @@ function Match() {
       </header>
 
 
-      {/* MAIN */}
+      {/* =================================================
+          MAIN
+      ================================================= */}
+
       <main className="match-content">
 
-        {/* HEADER */}
+
+        {/* =================================================
+            HEADER
+        ================================================= */}
+
         <section className="match-header">
 
           <p className="match-label">
@@ -181,15 +357,24 @@ function Match() {
         </section>
 
 
-        {/* SCORE */}
+        {/* =================================================
+            SCORE
+        ================================================= */}
+
         <section className="match-score-card">
 
-          <div className="match-score-circle">
+
+          <div
+            className="match-score-circle"
+            style={{
+              "--match-score": `${score}%`
+            }}
+          >
 
             <div className="match-score-inner">
 
               <strong>
-                {result.final_score}%
+                {animatedScore}%
               </strong>
 
               <span>
@@ -208,13 +393,7 @@ function Match() {
             </span>
 
             <h2>
-              {result.final_score >= 80
-                ? "Strong Match"
-                : result.final_score >= 60
-                ? "Good Match"
-                : result.final_score >= 40
-                ? "Partial Match"
-                : "Low Match"}
+              {matchTitle}
             </h2>
 
             <p>
@@ -228,12 +407,16 @@ function Match() {
         </section>
 
 
-        {/* SCORE BREAKDOWN */}
+        {/* =================================================
+            SCORE BREAKDOWN
+        ================================================= */}
+
         <section className="match-breakdown">
 
           <div className="match-section-heading">
 
             <div>
+
               <p className="match-label">
                 COMPATIBILITY BREAKDOWN
               </p>
@@ -241,6 +424,7 @@ function Match() {
               <h2>
                 How your score was calculated
               </h2>
+
             </div>
 
           </div>
@@ -248,7 +432,15 @@ function Match() {
 
           <div className="match-metrics">
 
-            <div className="match-metric">
+
+            {/* SEMANTIC */}
+
+            <div
+              className="match-metric"
+              style={{
+                "--animation-delay": "0.15s"
+              }}
+            >
 
               <div className="match-metric-top">
 
@@ -262,14 +454,19 @@ function Match() {
 
               </div>
 
+
               <div className="match-progress">
+
                 <div
                   className="match-progress-fill"
                   style={{
-                    width: `${result.semantic_score}%`
+                    width:
+                      `${result.semantic_score}%`
                   }}
                 ></div>
+
               </div>
+
 
               <small>
                 Overall meaning and context similarity
@@ -278,7 +475,14 @@ function Match() {
             </div>
 
 
-            <div className="match-metric">
+            {/* SKILL */}
+
+            <div
+              className="match-metric"
+              style={{
+                "--animation-delay": "0.25s"
+              }}
+            >
 
               <div className="match-metric-top">
 
@@ -292,14 +496,19 @@ function Match() {
 
               </div>
 
+
               <div className="match-progress">
+
                 <div
                   className="match-progress-fill"
                   style={{
-                    width: `${result.skill_score}%`
+                    width:
+                      `${result.skill_score}%`
                   }}
                 ></div>
+
               </div>
+
 
               <small>
                 Required skills found in your resume
@@ -308,7 +517,14 @@ function Match() {
             </div>
 
 
-            <div className="match-metric">
+            {/* EDUCATION */}
+
+            <div
+              className="match-metric"
+              style={{
+                "--animation-delay": "0.35s"
+              }}
+            >
 
               <div className="match-metric-top">
 
@@ -317,28 +533,50 @@ function Match() {
                 </span>
 
                 <strong>
-                  {result.education_score}%
+                  {educationSpecified
+                    ? `${result.education_score}%`
+                    : "Not specified"}
                 </strong>
 
               </div>
 
+
               <div className="match-progress">
+
                 <div
-                  className="match-progress-fill"
+                  className={
+                    educationSpecified
+                      ? "match-progress-fill"
+                      : "match-progress-fill not-applicable"
+                  }
                   style={{
-                    width: `${result.education_score}%`
+                    width:
+                      educationSpecified
+                        ? `${result.education_score}%`
+                        : "0%"
                   }}
                 ></div>
+
               </div>
 
+
               <small>
-                Education requirements compatibility
+                {educationSpecified
+                  ? "Education requirements compatibility"
+                  : "No education requirement specified"}
               </small>
 
             </div>
 
 
-            <div className="match-metric">
+            {/* EXPERIENCE */}
+
+            <div
+              className="match-metric"
+              style={{
+                "--animation-delay": "0.45s"
+              }}
+            >
 
               <div className="match-metric-top">
 
@@ -347,35 +585,56 @@ function Match() {
                 </span>
 
                 <strong>
-                  {result.experience_score}%
+                  {experienceSpecified
+                    ? `${result.experience_score}%`
+                    : "Not specified"}
                 </strong>
 
               </div>
 
+
               <div className="match-progress">
+
                 <div
-                  className="match-progress-fill"
+                  className={
+                    experienceSpecified
+                      ? "match-progress-fill"
+                      : "match-progress-fill not-applicable"
+                  }
                   style={{
-                    width: `${result.experience_score}%`
+                    width:
+                      experienceSpecified
+                        ? `${result.experience_score}%`
+                        : "0%"
                   }}
                 ></div>
+
               </div>
 
+
               <small>
-                Required experience compatibility
+                {experienceSpecified
+                  ? "Required experience compatibility"
+                  : "No experience requirement specified"}
               </small>
 
             </div>
+
 
           </div>
 
         </section>
 
 
-        {/* SKILLS */}
+        {/* =================================================
+            SKILLS
+        ================================================= */}
+
         <section className="match-skills-grid">
 
+
           {/* MATCHED */}
+
           <div className="match-skills-card">
 
             <div className="match-skills-card-header">
@@ -385,6 +644,7 @@ function Match() {
               </div>
 
               <div>
+
                 <h3>
                   Matched Skills
                 </h3>
@@ -392,6 +652,7 @@ function Match() {
                 <span>
                   Skills you already have
                 </span>
+
               </div>
 
             </div>
@@ -401,14 +662,23 @@ function Match() {
 
               {result.matched_skills?.length > 0 ? (
 
-                result.matched_skills.map((skill) => (
-                  <span
-                    className="match-skill-tag matched"
-                    key={skill}
-                  >
-                    ✓ {skill}
-                  </span>
-                ))
+                result.matched_skills.map(
+                  (skill, index) => (
+
+                    <span
+                      className="match-skill-tag matched"
+                      key={skill}
+                      style={{
+                        "--skill-delay":
+                          `${index * 0.07}s`
+                      }}
+                    >
+                      ✓ {skill}
+                    </span>
+
+                  )
+
+                )
 
               ) : (
 
@@ -424,6 +694,7 @@ function Match() {
 
 
           {/* MISSING */}
+
           <div className="match-skills-card">
 
             <div className="match-skills-card-header">
@@ -433,6 +704,7 @@ function Match() {
               </div>
 
               <div>
+
                 <h3>
                   Missing Skills
                 </h3>
@@ -440,6 +712,7 @@ function Match() {
                 <span>
                   Skills you may need to develop
                 </span>
+
               </div>
 
             </div>
@@ -449,14 +722,23 @@ function Match() {
 
               {result.missing_skills?.length > 0 ? (
 
-                result.missing_skills.map((skill) => (
-                  <span
-                    className="match-skill-tag missing"
-                    key={skill}
-                  >
-                    + {skill}
-                  </span>
-                ))
+                result.missing_skills.map(
+                  (skill, index) => (
+
+                    <span
+                      className="match-skill-tag missing"
+                      key={skill}
+                      style={{
+                        "--skill-delay":
+                          `${index * 0.07}s`
+                      }}
+                    >
+                      + {skill}
+                    </span>
+
+                  )
+
+                )
 
               ) : (
 
@@ -470,18 +752,105 @@ function Match() {
 
           </div>
 
+
         </section>
 
 
-        {/* ACTIONS */}
+        {/* =================================================
+            AI EXPLANATION
+        ================================================= */}
+
+        <section className="match-ai-explanation">
+
+          <div className="match-ai-header">
+
+            <div className="match-ai-icon">
+              AI
+            </div>
+
+            <div>
+
+              <p className="match-label">
+                AI CAREER INSIGHT
+              </p>
+
+              <h2>
+                AI Explanation
+              </h2>
+
+              <p>
+                Personalized insights based on your compatibility results.
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <div className="match-ai-content">
+
+            {result.ai_explanation ? (
+
+              result.ai_explanation
+                .split("\n")
+                .map((line, index) => {
+
+                  if (!line.trim()) {
+
+                    return (
+                      <div
+                        key={index}
+                        className="match-ai-space"
+                      />
+                    );
+
+                  }
+
+
+                  return (
+
+                    <p
+                      key={index}
+                      style={{
+                        "--ai-line-delay":
+                          `${index * 0.035}s`
+                      }}
+                    >
+                      {line}
+                    </p>
+
+                  );
+
+                })
+
+            ) : (
+
+              <p>
+                AI explanation is not available for this analysis.
+              </p>
+
+            )}
+
+          </div>
+
+        </section>
+
+
+        {/* =================================================
+            ACTIONS
+        ================================================= */}
+
         <section className="match-actions">
 
           <button
             className="match-secondary-button"
-            onClick={() => navigate("/job-description")}
+            onClick={() =>
+              navigate("/job-description")
+            }
           >
             ← Edit Job Description
           </button>
+
 
           <button
             className="match-primary-button"
@@ -492,10 +861,14 @@ function Match() {
 
         </section>
 
+
       </main>
 
     </div>
+
   );
+
 }
+
 
 export default Match;

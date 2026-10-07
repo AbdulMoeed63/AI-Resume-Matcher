@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { GoogleLogin } from "@react-oauth/google";
+
 import API from "../services/api";
+
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -10,6 +13,7 @@ function Login() {
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
+
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -31,16 +35,76 @@ function Login() {
       navigate("/dashboard");
 
     } catch (error) {
-      console.log("Login error:", error.response?.data);
+      console.log(
+        "Login error:",
+        error.response?.data
+      );
 
       setError(
         error.response?.data?.detail ||
         "Login failed. Please check your credentials."
       );
+
     } finally {
       setLoading(false);
     }
   };
+
+
+  const handleGoogleSuccess = async (
+  credentialResponse
+) => {
+
+  setError("");
+  setLoading(true);
+
+  try {
+
+    const response = await API.post(
+      "/auth/google",
+      {
+        credential:
+          credentialResponse.credential
+      }
+    );
+
+    localStorage.setItem(
+      "token",
+      response.data.access_token
+    );
+
+    navigate("/dashboard");
+
+  } catch (error) {
+
+    console.log(
+      "Google login error:",
+      error.response?.data
+    );
+
+    setError(
+      error.response?.data?.detail ||
+      "Google Sign-In failed. Please try again."
+    );
+
+   } finally {
+
+    setLoading(false);
+
+    }
+  };
+
+
+  const handleGoogleError = () => {
+    console.log(
+      "Google login failed"
+    );
+
+    setError(
+      "Google Sign-In failed. Please try again."
+    );
+  };
+
 
   return (
     <div className="auth-page">
@@ -50,20 +114,25 @@ function Login() {
       <div className="glow glow-two"></div>
       <div className="grid-overlay"></div>
 
+
       <div className="auth-layout">
+
 
         {/* LEFT SIDE */}
         <div className="auth-brand">
 
           <div className="brand-badge">
             <span className="brand-dot"></span>
+
             AI-Powered Career Intelligence
           </div>
+
 
           <h1>
             Find the right
             <span> opportunity.</span>
           </h1>
+
 
           <p>
             Analyze your resume against real job requirements
@@ -71,61 +140,113 @@ function Login() {
             experience analysis.
           </p>
 
+
           <div className="feature-list">
 
+
             <div className="feature-item">
-              <div className="feature-icon">✦</div>
+
+              <div className="feature-icon">
+                ✦
+              </div>
+
               <div>
-                <strong>AI Resume Analysis</strong>
+
+                <strong>
+                  AI Resume Analysis
+                </strong>
+
                 <small>
                   Understand how well your resume matches a job.
                 </small>
+
               </div>
+
             </div>
 
+
             <div className="feature-item">
-              <div className="feature-icon">✓</div>
+
+              <div className="feature-icon">
+                ✓
+              </div>
+
               <div>
-                <strong>Smart Skill Matching</strong>
+
+                <strong>
+                  Smart Skill Matching
+                </strong>
+
                 <small>
                   Identify your strengths and missing skills.
                 </small>
+
               </div>
+
             </div>
 
+
             <div className="feature-item">
-              <div className="feature-icon">◈</div>
+
+              <div className="feature-icon">
+                ◈
+              </div>
+
               <div>
-                <strong>Explainable Results</strong>
+
+                <strong>
+                  Explainable Results
+                </strong>
+
                 <small>
                   See exactly why your resume received its score.
                 </small>
+
               </div>
+
             </div>
+
 
           </div>
 
         </div>
 
+
+
         {/* LOGIN CARD */}
         <div className="auth-card">
 
+
           <div className="login-header">
+
             <div className="logo-mark">
               AI
             </div>
 
             <div>
-              <h2>Welcome back</h2>
-              <p>Sign in to continue to your dashboard.</p>
+
+              <h2>
+                Welcome back
+              </h2>
+
+              <p>
+                Sign in to continue to your dashboard.
+              </p>
+
             </div>
+
           </div>
+
+
 
           <form onSubmit={handleLogin}>
 
+
             <div className="input-group">
 
-              <label>Email address</label>
+              <label>
+                Email address
+              </label>
 
               <div className="input-wrapper">
 
@@ -137,7 +258,9 @@ function Login() {
                   type="email"
                   placeholder="you@example.com"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) =>
+                    setEmail(e.target.value)
+                  }
                   required
                 />
 
@@ -145,19 +268,30 @@ function Login() {
 
             </div>
 
+
+
             <div className="input-group">
 
+
               <div className="password-label">
-                <label>Password</label>
+
+                <label>
+                  Password
+                </label>
 
                 <button
                   type="button"
                   className="forgot-link"
-                  onClick={() => alert("Password reset will be added soon.")}
+                  onClick={() =>
+                    navigate("/forgot-password")
+                  }
                 >
                   Forgot password?
                 </button>
+
               </div>
+
+
 
               <div className="input-wrapper">
 
@@ -166,12 +300,19 @@ function Login() {
                 </span>
 
                 <input
-                  type={showPassword ? "text" : "password"}
+                  type={
+                    showPassword
+                      ? "text"
+                      : "password"
+                  }
                   placeholder="Enter your password"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) =>
+                    setPassword(e.target.value)
+                  }
                   required
                 />
+
 
                 <button
                   type="button"
@@ -185,25 +326,37 @@ function Login() {
                       : "Show password"
                   }
                 >
-                  {showPassword ? "◉" : "◌"}
+                  {showPassword
+                    ? "◉"
+                    : "◌"}
                 </button>
 
               </div>
 
             </div>
 
+
+
             {error && (
               <div className="error-message">
-                <span>!</span>
+
+                <span>
+                  !
+                </span>
+
                 {error}
+
               </div>
             )}
+
+
 
             <button
               type="submit"
               className="login-button"
               disabled={loading}
             >
+
               {loading ? (
                 <>
                   <span className="spinner"></span>
@@ -215,47 +368,86 @@ function Login() {
                   <span>→</span>
                 </>
               )}
+
             </button>
+
 
           </form>
 
+
+
           <div className="divider">
-            <span>OR</span>
+            <span>
+              OR
+            </span>
           </div>
 
-          <button
-            type="button"
-            className="google-button"
-            onClick={() =>
-              alert("Google authentication will be connected soon.")
-            }
-          >
-            <span className="google-icon">G</span>
-            Continue with Google
-          </button>
+
+
+          {/* GOOGLE SIGN-IN */}
+          <div className="google-login-wrapper">
+
+            <GoogleLogin
+              onSuccess={
+                handleGoogleSuccess
+              }
+
+              onError={
+                handleGoogleError
+              }
+
+              useOneTap={false}
+
+              theme="outline"
+
+              size="large"
+
+              width="100%"
+            />
+
+          </div>
+
+
 
           <p className="register-text">
+
             Don't have an account?{" "}
+
             <Link to="/register">
               Create an account
             </Link>
+
           </p>
 
+
+
           <div className="security-note">
-            <span>🔒</span>
+
+            <span>
+              🔒
+            </span>
+
             Your data is securely processed and protected.
+
           </div>
+
 
         </div>
 
       </div>
 
+
+
       <div className="auth-footer">
+
         © 2026 AI Resume Matcher · AI-powered career intelligence
+
       </div>
+
 
     </div>
   );
 }
+
 
 export default Login;
