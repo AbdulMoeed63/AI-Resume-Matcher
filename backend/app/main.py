@@ -4,11 +4,20 @@ from app.api.profile import router as profile_router
 from app.api.resume import router as resume_router
 from app.api.job_description import router as job_description_router
 from app.api.match import router as match_router
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(
     title="AI Resume Matcher API",
     description="AI-powered resume and job compatibility analysis API",
     version="1.0.0"
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 

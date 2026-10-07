@@ -7,7 +7,10 @@ from app.services.profile_extractor import (
 )
 
 
-def compare_skills(resume_text: str, job_description: str) -> dict:
+def compare_skills(
+    resume_text: str,
+    job_description: str
+) -> dict:
 
     resume_skills = set(
         skill.lower()
@@ -46,7 +49,7 @@ def compare_skills(resume_text: str, job_description: str) -> dict:
 def calculate_education_score(
     resume_text: str,
     job_description: str
-) -> float:
+):
 
     resume_education = extract_profile_information(
         resume_text
@@ -56,11 +59,12 @@ def calculate_education_score(
         job_description
     )["education_level"]
 
-    # If job doesn't specify education,
-    # don't penalize the candidate.
+    # Education was not mentioned in the job description.
+    # Therefore, it should NOT receive a perfect score.
     if required_education is None:
-        return 100.0
+        return None
 
+    # Requirement exists, but resume education could not be detected.
     if resume_education is None:
         return 0.0
 
@@ -77,7 +81,6 @@ def calculate_education_score(
     if resume_rank >= required_rank:
         return 100.0
 
-    # Partial credit for being one level below
     if resume_rank == required_rank - 1:
         return 70.0
 
@@ -87,7 +90,7 @@ def calculate_education_score(
 def calculate_experience_score(
     resume_text: str,
     job_description: str
-) -> float:
+):
 
     resume_years = extract_profile_information(
         resume_text
@@ -97,15 +100,14 @@ def calculate_experience_score(
         job_description
     )
 
-    # If job doesn't specify experience,
-    # don't penalize the candidate.
+    # Experience was not mentioned in the job description.
+    # Therefore, it should NOT receive a perfect score.
     if required_years == 0:
-        return 100.0
+        return None
 
     if resume_years >= required_years:
         return 100.0
 
-    # Partial score based on how close the candidate is
     score = (
         resume_years / required_years
     ) * 100

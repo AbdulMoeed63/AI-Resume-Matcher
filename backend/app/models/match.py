@@ -16,3 +16,12 @@ def get_matches_by_user(user_id: str):
             {"user_id": user_id}
         ).sort("created_at", -1)
     )
+
+def delete_matches_by_user(user_id: str):
+    result = matches_collection.delete_many(
+        {
+            "user_id": user_id
+        }
+    )
+
+    return result.deleted_count
